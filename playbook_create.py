@@ -36,17 +36,17 @@ class PlaybookCreate:
         self.util = Util()
 
     @staticmethod
-    def _check_iterable(value: dict | Iterable | str, validate: bool):
-        """Raise an exception if value is not an Iterable.
+    def _is_array_like_iterable(value: dict | Iterable | str) -> bool:
+        """Determine if value is an array-like iterable.
+
+        Primarily: deterine if a value is an iterable that is appropriate for Array-type outputs.
 
         Validation:
           - not a dict (dicts are iterable)
           - not a string (strings are iterable)
           - is Iterable
         """
-        if validate is True and (isinstance(value, dict | str) or not isinstance(value, Iterable)):
-            ex_msg = 'Invalid data provided for KeyValueArray.'
-            raise RuntimeError(ex_msg)
+        return not isinstance(value, dict | str) and  isinstance(value, Iterable)
 
     def _check_null(self, key: str, value: Any) -> bool:
         """Return True if key or value is null."""
@@ -308,7 +308,10 @@ class PlaybookCreate:
             return None
 
         # validate array type provided
-        self._check_iterable(value, validate)
+        if validate and not self._is_array_like_iterable(value):
+            ex_msg = 'Invalid data provided for BinaryArray.'
+            raise RuntimeError(ex_msg)
+
 
         # convert key to variable if required
         variable = self._get_variable(key, 'BinaryArray')
@@ -375,8 +378,10 @@ class PlaybookCreate:
             return None
 
         # validate array type provided
-        self._check_iterable(value, validate)
-
+        if validate and not self._is_array_like_iterable(value):
+            ex_msg = 'Invalid data provided for KeyValueArray.'
+            raise RuntimeError(ex_msg)
+        
         # convert key to variable if required
         variable = self._get_variable(key, 'KeyValueArray')
         if variable is None:
@@ -444,8 +449,10 @@ class PlaybookCreate:
             return None
 
         # validate array type provided
-        self._check_iterable(value, validate)
-
+        if validate and not self._is_array_like_iterable(value):
+            ex_msg = 'Invalid data provided for StringArray.'
+            raise RuntimeError(ex_msg)
+        
         # convert key to variable if required
         variable = self._get_variable(key, 'StringArray')
         if variable is None:
@@ -561,8 +568,10 @@ class PlaybookCreate:
             return None
 
         # validate array type provided
-        self._check_iterable(value, validate)
-
+        if validate and not self._is_array_like_iterable(value):
+            ex_msg = 'Invalid data provided for TCEntityArray.'
+            raise RuntimeError(ex_msg)
+        
         # convert key to variable if required
         variable = self._get_variable(key, 'TCEntityArray')
         if variable is None:
